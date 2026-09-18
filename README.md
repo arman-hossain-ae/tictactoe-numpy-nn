@@ -7,11 +7,11 @@ opponent and never loses a single game in any test.
 
 ## Results
 
-|              Opponent           | Games | Wins | Draws | Losses |
-|:---                             | :---: |:---: | :---: |  :---: |
-| Perfect minimax (deterministic) |   5   |  0   |   5   |  **0** |
-| Random play                     |  1000 |  996 |   4   |  **0** |
-| Random opening + perfect play   |  1000 |  884 |  116  |  **0** |
+| Opponent | Games | Wins | Draws | Losses |
+|:---|:---:|:---:|:---:|:---:|
+| Perfect minimax (deterministic) | 5 | 0 | 5 | **0** |
+| Random play | 1000 | 996 | 4 | **0** |
+| Random opening + perfect play | 1000 | 884 | 116 | **0** |
 
 In tic-tac-toe, perfect play from both sides always ends in a draw. Drawing
 against minimax proves the agent plays optimally — a policy that never loses
@@ -37,12 +37,12 @@ against perfect play cannot be improved.
 - Metrics logged every 5,000 games.
 
 ### Evaluation (`evaluate.py`)
-- Deterministic argmax policy, with invalid moves masked out.
+- Deterministic argmax policy.
 - Three tests: vs. random, vs. random-opening + perfect play, vs. pure minimax.
 
 ## Training curve
 
-![Training curve](assets/training_curve.png)
+![Training curve](training_curve.png)
 
 The curve tells a curriculum-learning story: an initial dip as the agent learns
 basic legal play, a spike as the opponent grows stronger, then a sharp drop as the
@@ -53,25 +53,38 @@ measures update magnitude, not classification error.
 ## Files
 
 | File | Purpose |
-|:---  |  :---   |
-| `network.py`   | Neural network from scratch (forward, REINFORCE update, pruning, save/load) |
+|:---|:---|
+| `network.py` | Neural network from scratch (forward, REINFORCE update, pruning, save/load) |
 | `tictactoe.py` | Environment and perfect minimax opponent |
-| `train.py`     | Training loop with curriculum opponent and logging |
-| `evaluate.py`  | Evaluation against random and minimax |
-| `logger.py`    | `TrainingLog` for metrics + `Visualizer` for live plotting |
-| `plot.py`      |  Regenerates the training curve from `training_log.npz` |
+| `train.py` | Training loop with curriculum opponent and logging |
+| `evaluate.py` | Evaluation against random and minimax |
+| `logger.py` | `TrainingLog` for metrics + `Visualizer` for live plotting |
+| `plot.py` | Regenerates the training curve from `training_log.npz` |
 | `training_curve.png` | Training curve |
-
 
 ## Setup
 
 ```bash
 pip install numpy matplotlib
+```
 
 ## Usage
+
 Train from scratch:
+```bash
 python train.py
+```
 
-Evaluate a model:
+Evaluate a trained model:
+```bash
 python evaluate.py
+```
 
+## Notes and limitations
+
+- The state encoding uses 9 inputs, relative to the current player's perspective.
+  Because the agent was trained only as first player, the trained policy is
+  specific to playing as X.
+- Evaluation uses the raw argmax of the network's output; illegal moves are not
+  masked. In 2,005 games across all three tests, the agent never forfeited,
+  indicating the policy learned to avoid occupied cells.
