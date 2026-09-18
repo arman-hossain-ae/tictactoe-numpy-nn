@@ -38,7 +38,7 @@ against perfect play cannot be improved.
 
 ### Evaluation (`evaluate.py`)
 - Deterministic argmax policy.
-- Three tests: vs. random, vs. random-opening + perfect play, vs. pure minimax.
+- Two tests: vs. random, vs. pure minimax.
 
 ## Training curve
 
