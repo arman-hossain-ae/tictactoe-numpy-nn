@@ -59,7 +59,7 @@ measures update magnitude, not classification error.
 | `train.py` | Training loop with curriculum opponent and logging |
 | `evaluate.py` | Evaluation against random and minimax |
 | `logger.py` | `TrainingLog` for metrics + `Visualizer` for live plotting |
-| `assets/training_curve.png` | Training curve |
+| `training_curve.png` | Training curve |
 
 ## Setup
 
