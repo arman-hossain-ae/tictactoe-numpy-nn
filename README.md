@@ -67,7 +67,9 @@ measures update magnitude, not classification error.
 ```bash
 pip install numpy matplotlib
 ```
-
+A pretrained model (tictactoe_model.npz) is included in the repository. To
+evaluate it directly without training, run python evaluate.py. To train a new
+model from scratch, run python train.py first.
 ## Usage
 
 Train from scratch:
