@@ -65,3 +65,11 @@ measures update magnitude, not classification error.
 
 ```bash
 pip install numpy matplotlib
+
+## Usage
+Train from scratch:
+python train.py
+
+Evaluate a model:
+python evaluate.py
+
