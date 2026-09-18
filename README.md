@@ -53,13 +53,15 @@ measures update magnitude, not classification error.
 ## Files
 
 | File | Purpose |
-|:---|:---|
-| `network.py` | Neural network from scratch (forward, REINFORCE update, pruning, save/load) |
+|:---  |  :---   |
+| `network.py`   | Neural network from scratch (forward, REINFORCE update, pruning, save/load) |
 | `tictactoe.py` | Environment and perfect minimax opponent |
-| `train.py` | Training loop with curriculum opponent and logging |
-| `evaluate.py` | Evaluation against random and minimax |
-| `logger.py` | `TrainingLog` for metrics + `Visualizer` for live plotting |
+| `train.py`     | Training loop with curriculum opponent and logging |
+| `evaluate.py`  | Evaluation against random and minimax |
+| `logger.py`    | `TrainingLog` for metrics + `Visualizer` for live plotting |
+| `plot.py`      |  Regenerates the training curve from `training_log.npz` |
 | `training_curve.png` | Training curve |
+
 
 ## Setup
 
