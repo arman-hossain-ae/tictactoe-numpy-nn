@@ -6,8 +6,10 @@ from logger import TrainingLog
 from logger import Visualizer
 
 inputs = 9 
-hidden = [84]
+hidden = [88]
 outputs = 9
+
+AGENT_SIDE = 1  # 1 to make it play as X (first player), -1 to make it play as O (second player)
 
 
 def main():
@@ -27,10 +29,16 @@ def main():
 
     best_eval_score = -9999.0
 
-    start_lr = 0.0005
-    end_lr = 0.00005
-    decay_step = (start_lr - end_lr) / 1_000_000
-    agent_side = 1
+    start_lr = 0.001
+    end_lr = 0.0003
+    decay_step = (start_lr - end_lr) / 500_000
+    
+    if AGENT_SIDE == 1:
+        model_name = "tictactoe_model_x"
+        training_log_name = "training_log_x"
+    else:
+        model_name = "tictactoe_model_o"
+        training_log_name = "training_log_o"
 
     #start_eps = 1
     #end_eps = 0.05
@@ -38,7 +46,7 @@ def main():
     
     # Starts training
     for x in range(training):
-        current_lr = max(0.00001, start_lr - (x * decay_step))
+        current_lr = max(end_lr, start_lr - (x * decay_step))
         #current_eps = max(end_eps, start_eps - (x * decay_eps))
 
         states_p1 = []
@@ -50,7 +58,7 @@ def main():
         board, current_player, is_over = env.reset()
 
         while not is_over:                
-            if current_player == agent_side:
+            if current_player == AGENT_SIDE:
                 '''if random.random < current_eps:
                     valid_actions = np.where((board[0:9] == -0.1) & (board[9:18] == -0.1))[0]
                     action = random.choice(valid_actions)
@@ -79,7 +87,7 @@ def main():
                 valid_actions = np.where(board == -0.1)[0]
                 chosen_action = None
 
-                bot_focus_accuracy = min(0.9, 0.05 + (0.9 / 150_000) * x)    
+                bot_focus_accuracy = min(0.8, 0.05 + (0.75 / 150_000) * x)    
                 
                 if random.random() < bot_focus_accuracy:
                     # Win Check: Can the opponent win right now?
@@ -113,7 +121,7 @@ def main():
                     if env.check_win(last_player):
                         losses += 1
                         if len(t_rewards) > 0:
-                            t_rewards[-1] = -10 
+                            t_rewards[-1] = -10  # -10 to discourge losing 
                     else:
                         draws += 1
                     break
@@ -128,11 +136,11 @@ def main():
             agent.prune(0.1)
 
         # Evaluation
-        # 2 games against min max, 10_000 games against randoms, optimal should be 0 forfeits and 0 losses
+        # 1 games against min max, 10_000 games against randoms, optimal should be 0 forfeits and 0 losses
         if x % 50000 == 0 and x >= 200_000:
             print("Running Evaluation")
-            eval_games = 2
-            random_games = 10_000
+            eval_games = 1
+            random_games = 20_000
             eval_wins = 0
             eval_draws = 0
             eval_forfeits = 0
@@ -142,7 +150,7 @@ def main():
                 e_board, e_player, e_over = env.reset()
                 
                 while not e_over:
-                    if e_player == agent_side:
+                    if e_player == AGENT_SIDE:
                         e_probs = agent.forward(e_board)
                         e_action = np.argmax(e_probs)
                         e_board, e_player, e_rew, e_over = env.step(e_action)
@@ -168,7 +176,7 @@ def main():
                 e_board, e_player, e_over = env.reset()
                 
                 while not e_over:
-                    if e_player == agent_side:
+                    if e_player == AGENT_SIDE:
                         e_probs = agent.forward(e_board)
                         e_action = np.argmax(e_probs)
                         e_board, _, e_rew, e_over = env.step(e_action)
@@ -196,7 +204,7 @@ def main():
             
             if current_eval_score > best_eval_score:
                 best_eval_score = current_eval_score
-                agent.save("tictactoe_model.npz")
+                agent.save(model_name)
                 print(f"🏆 NEW CHAMPION MODEL SEIZED AT GAME {x}! (Wins: {eval_wins} | Draws: {eval_draws} | Losses: {eval_losses} | Forfeits: {eval_forfeits})")
 
         '''if x >= 200_000 and x % 20000 == 0:
@@ -206,7 +214,7 @@ def main():
             logger.record(x, avg_loss=avg_loss/5000)
             avg_loss = 0
             visualizer.update(logger.history)
-            logger.save()
+            logger.save(training_log_name)
             total_recorded = wins + draws + forfeits + losses
             if total_recorded > 0:
                 win_rate = (wins / total_recorded) * 100
@@ -216,7 +224,7 @@ def main():
     print("Training done")
 
 
-def discount_rewards(rewards_list, gamma=0.3):
+def discount_rewards(rewards_list, gamma=0.9):
     last = 0
     discounted = np.array(rewards_list, dtype=np.float32)
     for t in reversed(range(len(discounted))):
