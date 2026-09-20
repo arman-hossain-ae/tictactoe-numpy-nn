@@ -122,3 +122,7 @@ python evaluate.py
 - The O-agent draws (rather than wins) against opponents that open randomly and
   then play perfectly. This is consistent with optimal play — verified separately:
   even a perfect minimax opponent as O draws 500/500 against this setup.
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
